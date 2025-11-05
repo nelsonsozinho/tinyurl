@@ -1,0 +1,27 @@
+# Spring Boot configuration
+spring:
+  config:
+    import: env.properties
+  profiles:
+    active: dev
+  application:
+    name: tinyurl
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_DATABASE_HOST}:5432/${DB_DATABASE}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    show-sql: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+  cache:
+    type: ${CACHE_TYPE:redis}

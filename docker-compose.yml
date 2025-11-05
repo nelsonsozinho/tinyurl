@@ -1,0 +1,57 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: tinyurl-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: tinyurl
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  db-init:
+    image: postgres:16
+    depends_on:
+      - postgres
+    restart: "no"
+    environment:
+      PGPASSWORD: postgres
+    command: >-
+      sh -c "until pg_isready -h postgres -U postgres; do sleep 1; done;
+      psql -h postgres -U postgres -tc \"SELECT 1 FROM pg_database WHERE datname='tinyurl'\" |
+      grep -q 1 || psql -h postgres -U postgres -c \"CREATE DATABASE tinyurl;\""
+
+  redis:
+    image: redis:latest
+    container_name: tinyurl-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  tinyurl:
+    build:
+      dockerfile: Dockerfile
+    container_name: tinyurl
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tinyurl
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+#      SPRING_REDIS_URL: "redis://redis:6379/0"
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+    ports:
+      - "8080:8080"
+
+volumes:
+  redis_data:
+  postgres_data:

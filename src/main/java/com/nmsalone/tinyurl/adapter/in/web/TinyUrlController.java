@@ -2,7 +2,6 @@ package com.nmsalone.tinyurl.adapter.in.web;
 
 import com.nmsalone.tinyurl.adapter.in.rest.TinyUrlRest;
 import com.nmsalone.tinyurl.adapter.out.rest.TinyRest;
-import com.nmsalone.tinyurl.application.service.ShortenUrlUseCaseService;
 import com.nmsalone.tinyurl.application.usecase.RecoverUrlUseCase;
 import com.nmsalone.tinyurl.application.usecase.ShortenUrlUseCase;
 import lombok.RequiredArgsConstructor;

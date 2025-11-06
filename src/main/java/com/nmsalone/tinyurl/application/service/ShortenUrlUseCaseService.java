@@ -6,8 +6,11 @@ import com.nmsalone.tinyurl.application.usecase.ShortenUrlUseCase;
 import com.nmsalone.tinyurl.domain.exception.UrlAlreadyExistException;
 import com.nmsalone.tinyurl.port.out.UrlRepository;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigInteger;
 
 @Service
 @RequiredArgsConstructor
@@ -40,13 +43,15 @@ public class ShortenUrlUseCaseService implements ShortenUrlUseCase {
         return repository.findByOriginalUrl(originalUrl).isPresent();
     }
 
-    public static String encodeBase62(long id) {
-        StringBuilder sb = new StringBuilder();
-        while (id > 0) {
-            int remainder = (int) (id % 62);
-            sb.append(BASE62.charAt(remainder));
-            id /= 62;
+    public static String encodeBase62(ObjectId id) {
+        byte[] bytes = ObjectId.get().toByteArray();
+        BigInteger bigInteger = new BigInteger(1, bytes);
+        StringBuilder builder = new StringBuilder();
+        while(bigInteger.compareTo(BigInteger.ZERO) > 0) {
+            BigInteger[] divRem = bigInteger.divideAndRemainder(BigInteger.valueOf(62));
+            builder.append(BASE62.charAt(divRem[1].intValue()));
+            bigInteger = divRem[0];
         }
-        return sb.reverse().toString();
+        return builder.reverse().toString();
     }
 }

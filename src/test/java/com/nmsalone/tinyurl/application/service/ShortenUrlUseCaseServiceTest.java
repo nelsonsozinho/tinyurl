@@ -3,6 +3,7 @@ package com.nmsalone.tinyurl.application.service;
 import com.nmsalone.tinyurl.adapter.out.persistence.Url;
 import com.nmsalone.tinyurl.adapter.out.rest.TinyRest;
 import com.nmsalone.tinyurl.port.out.UrlRepository;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,14 +31,14 @@ public class ShortenUrlUseCaseServiceTest {
     @Test
     void shortenUrl_setsTinyUrl_and_savesTwice() {
         String original = "http://example.com";
-
+        ObjectId id = ObjectId.get();
         AtomicInteger callCount = new AtomicInteger();
         when(repository.save(any(Url.class))).thenAnswer(invocation -> {
             Url arg = invocation.getArgument(0);
             if (callCount.getAndIncrement() == 0) {
                 // first save returns the entity with an id assigned by persistence
                 Url saved = new Url();
-                saved.setId(125L);
+                saved.setId(id);
                 saved.setOriginalUrl(arg.getOriginalUrl());
                 return saved;
             } else {
@@ -50,7 +51,7 @@ public class ShortenUrlUseCaseServiceTest {
 
         assertNotNull(result);
         assertEquals(original, result.getOriginalUrl());
-        String expectedTiny = "/" + ShortenUrlUseCaseService.encodeBase62(125L);
+        String expectedTiny = "/" + ShortenUrlUseCaseService.encodeBase62(id);
         assertEquals(expectedTiny, result.getTinyUrl());
         verify(repository, times(2)).save(any(Url.class));
     }

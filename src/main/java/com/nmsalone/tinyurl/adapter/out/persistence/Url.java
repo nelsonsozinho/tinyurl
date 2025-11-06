@@ -1,28 +1,22 @@
 package com.nmsalone.tinyurl.adapter.out.persistence;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-@Entity
-@Getter
-@Setter
-@Table(name="tiny_url")
+@Document("tiny_url")
+@Data
 public class Url {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private ObjectId id;
 
-    @Column(name="original_url", nullable = false)
+    @Field(name="original_url")
     private String originalUrl;
 
-    @Column(name="tiny_url")
+    @Field(name="tiny_url")
     private String tinyUrl;
 
 }

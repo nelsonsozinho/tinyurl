@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tinyurl-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tinyurl
+  template:
+    metadata:
+      labels:
+        app: tinyurl
+    spec:
+      containers:
+        - name: tinyurl
+          image: nelsonsozinho/tinyurl:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgres:5432/tinyurl
+            - name: SPRING_DATASOURCE_USERNAME
+              value: postgres
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: postgres
+            - name: SPRING_DATA_REDIS_HOST
+              value: redis
+            - name: SPRING_DATA_REDIS_PORT
+              value: "6379"

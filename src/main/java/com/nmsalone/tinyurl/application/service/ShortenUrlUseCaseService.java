@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 public class ShortenUrlUseCaseService implements ShortenUrlUseCase {
@@ -22,6 +24,8 @@ public class ShortenUrlUseCaseService implements ShortenUrlUseCase {
     public TinyRest shortenUrl(String originalUrl) {
         Url newUrl = new Url();
         newUrl.setOriginalUrl(originalUrl);
+        newUrl.setRegister(LocalDate.now());
+        newUrl.setExpiring(LocalDate.now().plusYears(1));
         if(!hasUrlAlreadyRegister(originalUrl)) {
             Url urlSaved = repository.save(newUrl);
             urlSaved.setTinyUrl("/" + encodeBase62(urlSaved.getId()));
